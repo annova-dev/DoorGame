@@ -224,4 +224,4 @@ while not done:
         tela.blit(label, (30, 30))
 
     pygame.display.update()
->>>>>>> 4284474 (Add files via upload)
+
