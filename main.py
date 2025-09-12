@@ -33,10 +33,7 @@ porta3 = pygame.image.load("Porta3.png")
 porta1_aberta = pygame.image.load("imagens/Porta1_open.png")
 porta2_aberta = pygame.image.load("imagens/Porta2_open.png")
 porta3_aberta = pygame.image.load("imagens/Porta3_open.png")
-# cats
-dottie = pygame.image.load("imagens/dottie.png")
-bartolomew = pygame.image.load("imagens/bartolomew.png")
-sunny = pygame.image.load("imagens/sunny.png")
+
 #cats on the door
 dottie_door = pygame.image.load("imagens/dottiedoor.png")
 bart_door = pygame.image.load("imagens/bartdoor.png")
@@ -101,7 +98,7 @@ while not menu_done:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if bb1.collidepoint(event.pos):
-                jogo_quit = False
+                cat_chosen = False
                 menu_done = True
 
             if bb2.collidepoint(event.pos):
@@ -123,6 +120,50 @@ while not menu_done:
 
     # Criterio de parada
 
+    pygame.display.update()
+
+# TELA DE ESCOLHA DO GATO
+
+# cats
+bartolomiau = pygame.image.load("imagens/bartolomiau.png")
+dottie = pygame.image.load("imagens/dottie.png")
+sunny = pygame.image.load("imagens/sunny.png")
+
+while not cat_chosen:
+    tela.fill(magenta_claro)
+    mouse = pygame.mouse.get_pos()
+
+    bart_choice = bartolomiau.get_rect(topleft=(2 * x / 9, 300))
+    tela.blit(bartolomiau, bart_choice)
+    # pygame.draw.rect(tela, branco, bart_choice, 1)
+
+    sunny_choice = sunny.get_rect(topleft=(4 * x / 9, 300))
+    tela.blit(sunny, sunny_choice)
+
+    dottie_choice = dottie.get_rect(topleft=(6 * x / 9, 325))
+    tela.blit(dottie, dottie_choice)
+
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if bart_choice.collidepoint(event.pos):
+                jogo_quit = False
+                cat = "bart"
+                cat_chosen = True
+
+            if sunny_choice.collidepoint(event.pos):
+                jogo_quit = False
+                cat = 'sunny'
+                cat_chosen = True
+
+            if dottie_choice.collidepoint(event.pos):
+                jogo_quit = False
+                cat = 'dottie'
+                cat_chosen = True
+
+        if event.type == QUIT:
+            done = True
+            pygame.quit()
+            sys.exit()
     pygame.display.update()
 
 #Variaveis do jogo
@@ -185,7 +226,6 @@ while not jogo_quit:
 
     pygame.display.update()
 
-=======
 import sys
 import pygame
 from pygame.locals import *
