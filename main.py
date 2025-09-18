@@ -262,19 +262,15 @@ while reescolha:
         tela.blit(porta3, porta3_b)
         pygame.draw.rect(tela, magenta, porta3_b, 1)
 
-    if cat not in ans["Porta1"]:
-        print("iupiii")
-        print(ans)
-    #Escolha da porta
-    if porta1_fechada == False:
-        tela.blit(dottie_door, (2.45*x / 9, 430))
-        tela.blit(porta1_aberta, (2*x / 9, 270))
-
-    if porta2_fechada == False:
-        tela.blit(porta2_aberta, (4*x / 9, 300))
-
-    elif porta3_fechada == False:
-        tela.blit(porta3_aberta, (6*x / 9, 300))
+    if cat not in ans["Porta1"] and portaescolhida != "Porta1":
+        tela.blit(porta1_aberta, (2 * x / 9, 300))
+        porta1_fechada = False
+    elif cat not in ans["Porta2"] and portaescolhida != "Porta2":
+        tela.blit(porta2_aberta, (4 * x / 9, 300))
+        porta2_fechada = False
+    elif cat not in ans["Porta3"] and portaescolhida != "Porta3":
+        tela.blit(porta3_aberta, (6 * x / 9, 300))
+        porta3_fechada = False
 
     #Tornando as portas clicaveis
 
