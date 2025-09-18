@@ -43,6 +43,7 @@ sunny_door = pygame.image.load("imagens/sunnydoor.png")
 
 # Texto
 fonte = pygame.font.SysFont("bahnschrift", 64)
+fonte2 = pygame.font.SysFont("bahnschrift", 32)
 #print(pygame.font.get_fonts())
 titulo = pygame.image.load("Doorgamelogo.png")
 
@@ -133,6 +134,8 @@ while not cat_chosen:
     tela.fill(magenta_claro)
     mouse = pygame.mouse.get_pos()
 
+    inserir_texto("Escolha um gato para adotar!", fonte, branco,225,150 )
+
     bart_choice = bartolomiau.get_rect(topleft=(2 * x / 9, 300))
     tela.blit(bartolomiau, bart_choice)
     # pygame.draw.rect(tela, branco, bart_choice, 1)
@@ -146,17 +149,17 @@ while not cat_chosen:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if bart_choice.collidepoint(event.pos):
-                jogo_quit = False
+                fase1 = True
                 cat = "bart"
                 cat_chosen = True
 
             if sunny_choice.collidepoint(event.pos):
-                jogo_quit = False
+                fase1 = True
                 cat = 'sunny'
                 cat_chosen = True
 
             if dottie_choice.collidepoint(event.pos):
-                jogo_quit = False
+                fase1 = True
                 cat = 'dottie'
                 cat_chosen = True
 
@@ -170,13 +173,15 @@ while not cat_chosen:
 porta1_fechada = True
 porta2_fechada = True
 porta3_fechada = True
-# Variar dependendo do gato
-cat = {dottie: dottie}
+ans = porta(cat)
+print(ans)
 
 # ------------- Jogo –-------------
-while not jogo_quit:
+while fase1:
     tela.fill(amarelo_claro)
     mouse = pygame.mouse.get_pos()
+
+    inserir_texto("Opa! Seu gato será seu se adivinhar em que porta ele está!", fonte2, magenta, 225, 150)
 
     if porta1_fechada:
         porta1_b = porta1.get_rect(topleft=(2 * x / 9, 300))
@@ -193,13 +198,79 @@ while not jogo_quit:
         tela.blit(porta3, porta3_b)
         pygame.draw.rect(tela, magenta, porta3_b, 1)
 
-    print(porta1_fechada)
+
     #Escolha da porta
     if porta1_fechada == False:
         tela.blit(dottie_door, (2.45*x / 9, 430))
         tela.blit(porta1_aberta, (2*x / 9, 270))
 
-    elif porta2_fechada == False:
+    if porta2_fechada == False:
+        tela.blit(porta2_aberta, (4*x / 9, 300))
+
+    elif porta3_fechada == False:
+        tela.blit(porta3_aberta, (6*x / 9, 300))
+
+    #Tornando as portas clicaveis
+
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            jogo_quit = True
+            pygame.quit()
+            sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print("CLICK")
+            if porta1_b.collidepoint(event.pos):
+                reescolha = True
+                portaescolhida = "Porta1"
+                fase1 = False
+
+            elif porta2_b.collidepoint(event.pos):
+                reescolha = True
+                portaescolhida = "Porta2"
+                fase1 = False
+
+            elif porta3_b.collidepoint(event.pos):
+                reescolha = True
+                portaescolhida = "Porta3"
+                fase1 = False
+
+    #porta = porta()
+    pygame.display.update()
+
+#TELA DE RE-ESCOLHA DE PORTA ----------------------------------------------
+
+
+while reescolha:
+    tela.fill(rosa_claro)
+    mouse = pygame.mouse.get_pos()
+
+    inserir_texto("Tem certeza que vai escolher essa porta?", fonte2, branco, 365, 550)
+    inserir_texto("Vou facilitar para você.", fonte2, branco, 485, 590)
+
+    if porta1_fechada:
+        porta1_b = porta1.get_rect(topleft=(2 * x / 9, 300))
+        tela.blit(porta1, porta1_b)
+        pygame.draw.rect(tela, branco, porta1_b, 1)
+
+    if porta2_fechada:
+        porta2_b = porta2.get_rect(topleft=(4 * x / 9, 300))
+        tela.blit(porta2, porta2_b)
+        pygame.draw.rect(tela, preto, porta2_b, 1)
+
+    if porta3_fechada:
+        porta3_b = porta3.get_rect(topleft=(6 * x / 9, 300))
+        tela.blit(porta3, porta3_b)
+        pygame.draw.rect(tela, magenta, porta3_b, 1)
+
+    if cat not in ans["Porta1"]:
+        print("iupiii")
+        print(ans)
+    #Escolha da porta
+    if porta1_fechada == False:
+        tela.blit(dottie_door, (2.45*x / 9, 430))
+        tela.blit(porta1_aberta, (2*x / 9, 270))
+
+    if porta2_fechada == False:
         tela.blit(porta2_aberta, (4*x / 9, 300))
 
     elif porta3_fechada == False:
@@ -222,46 +293,5 @@ while not jogo_quit:
                 porta3_fechada = False
 
     #porta = porta()
-
-
-    pygame.display.update()
-
-import sys
-import pygame
-from pygame.locals import *
-
-pygame.init()
-
-# Tela do jogo
-tela = pygame.display.set_mode((1000, 600))
-icon = pygame.image.load("icon.jpg")
-pygame.display.set_icon(icon)
-pygame.display.set_caption("DoorGame")
-
-# CORES
-branco = (255, 255, 255)
-preto = (0, 0, 0)
-magenta = (155, 19, 90)
-
-tela.fill(branco)
-
-# Texto
-fonte = pygame.font.SysFont("bahnschrift", 64)
-print(pygame.font.get_fonts())
-label = fonte.render("Bem vindo ao jogo da porta!", 1, preto)
-
-# Criterio de parada
-done = False
-
-# ------------- Main –-------------
-while not done:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            done = True
-            pygame.quit()
-            sys.exit()
-
-        tela.blit(label, (30, 30))
-
     pygame.display.update()
 
