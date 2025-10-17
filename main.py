@@ -1,12 +1,12 @@
 import sys
 import pygame
-import random
 from pygame.locals import *
 from tkinter import *
 from tkinter import messagebox
 from game import porta
 
 pygame.init()
+clock = pygame.time.Clock()
 
 # Tela do jogo
 x=1280
@@ -22,6 +22,7 @@ preto = (0, 0, 0)
 magenta = (155, 19, 90)
 magenta_claro = (170, 39, 98, 50)
 rosa_claro = (200, 39, 98, 50)
+rosa_mais_claro = (255, 153, 153)
 amarelo_claro = (255, 255, 200)
 
 tela.fill(branco)
@@ -43,6 +44,7 @@ sunny_door = pygame.image.load("imagens/sunnydoor.png")
 # Texto
 fonte = pygame.font.SysFont("bahnschrift", 64)
 fonte2 = pygame.font.SysFont("bahnschrift", 32)
+fonte3 = pygame.font.SysFont("bahnschrift", 20)
 #print(pygame.font.get_fonts())
 titulo = pygame.image.load("Doorgamelogo.png")
 
@@ -59,6 +61,39 @@ def press(bo, tamanho):
         botao(rosa_claro, tamanho)
     else:
         botao(magenta_claro, tamanho)
+
+def popup():
+    popup_rect = pygame.Rect(300, 100, 500, 200)
+    pygame.draw.rect(tela, rosa_mais_claro, popup_rect)
+    pygame.draw.rect(tela, magenta, popup_rect, 5)
+    text = fonte2.render("Jogar novamente?", True, branco)
+    tela.blit(text, (popup_rect.x + 50, popup_rect.y + 80))
+    #botoes
+    botao1 = (popup_rect.x + 290, popup_rect.y + 130, 80, 40)
+    botao(magenta, botao1)
+    b1 = pygame.Rect(botao1)
+    press(b1, botao1)
+    sim = fonte3.render("Sim", True, branco)
+    tela.blit(sim, (popup_rect.x + 310, popup_rect.y + 140))
+
+    botao2 = (popup_rect.x + 380, popup_rect.y + 130, 80, 40)
+    botao(magenta, botao2)
+    b2 = pygame.Rect(botao2)
+    press(b2, botao2)
+    sair = fonte3.render("Não", True, branco)
+    tela.blit(sair, (popup_rect.x + 405, popup_rect.y + 140))
+
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if b1.collidepoint(event.pos):
+                reescolha = False
+                menu_done = False
+
+            if b2.collidepoint(event.pos):
+                jogo_quit = 0
+                reescolha = False
+                pygame.quit()
+                sys.exit()
 
 #MENU
 
@@ -178,8 +213,10 @@ while not cat_chosen:
 porta1_fechada = True
 porta2_fechada = True
 porta3_fechada = True
+
 ans,ran = porta(cat)
 print(ans,ran)
+
 chosen_cat = cats.pop(str(cat))
 print(cats, chosen_cat)
 
@@ -226,6 +263,7 @@ while parte1:
             jogo_quit = True
             pygame.quit()
             sys.exit()
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             print("CLICK")
             if porta1_b.collidepoint(event.pos):
@@ -248,16 +286,14 @@ while parte1:
 
 #TELA DE RE-ESCOLHA DE PORTA ----------------------------------------------
 # parte 2 do jogo!
-
-
+popup_tempo = 3000
+popup_on = False
+start_time = 999999999
 
 while reescolha:
     tela.fill(rosa_claro)
     mouse = pygame.mouse.get_pos()
     lista_fechadas = [porta1_fechada, porta2_fechada, porta3_fechada]
-
-    inserir_texto("Tem certeza que vai escolher essa porta?", fonte2, branco, 365, 550)
-    inserir_texto("Vou facilitar para você.", fonte2, branco, 485, 590)
 
     # Exibindo as portas não escolhidas como fechadas, e abrindo uma das que não foram escolhidas mas que não contem o gato certo
     if porta1_fechada:
@@ -271,8 +307,11 @@ while reescolha:
     if porta3_fechada:
         porta3_b = porta3.get_rect(topleft=(6 * x / 9, 300))
         tela.blit(porta3, porta3_b)
-    print(ran)
-    if sum(lista_fechadas)>= 2:
+
+    if sum(lista_fechadas) >= 2:
+        inserir_texto("Tem certeza que vai escolher essa porta?", fonte2, branco, 365, 550)
+        inserir_texto("Vou facilitar para você.", fonte2, branco, 485, 590)
+
         if cat not in ans["Porta1"] and portaescolhida != "Porta1":
             tela.blit(cats[list(cats)[0]], (2 * x / 9, 390))
             porta1_fechada = False
@@ -285,22 +324,34 @@ while reescolha:
 
     else:
         cont = 0
+        cont_gatos = 0
+        porta1_fechada = False
+        porta2_fechada = False
+        porta3_fechada = False
+
         for i in (lista_portas):
             cont = cont+1
             if i:
                 if ran == portaescolhida:
-                    print('PARABENS')
-                    print(ran)
-                    print(i)
-                    if ran == i:
-                        print('PARABENS aaaaaa')
-                        tela.blit(chosen_cat, (2.5 * cont * x / 9, 390))
-                    else:
-                        tela.blit(cats[list(cats)[1]], (2.5 * cont * x / 9, 390))
+                    inserir_texto("PARABÉNS!", fonte2, branco, 555, 550)
+                    inserir_texto("Você escolheu o gato certo.", fonte2, branco, 455, 590)
 
                 else:
-                    print('Escolha errada ;(')
+                    inserir_texto("Opa! Errou o gato", fonte2, branco, 505, 550)
+                    inserir_texto("Agora seu gato vai viver uma vida nova sem você.", fonte2, branco, 295, 590)
 
+                if ran == i:
+                    tela.blit(chosen_cat, (2 * cont * x / 9, 390))
+                else:
+                    tela.blit(cats[list(cats)[cont_gatos]], (2 * cont * x / 9, 390))
+                    cont_gatos = cont_gatos + 1
+
+    current_time = pygame.time.get_ticks()
+    print(start_time)
+    if current_time - start_time >= popup_tempo:
+        popup_on = True
+    if popup_on:
+        popup()
     #Tornando as portas restantes clicaveis
 
     for event in pygame.event.get():
@@ -313,18 +364,22 @@ while reescolha:
                 if porta1_b.collidepoint(event.pos):
                     porta1_fechada = False
                     portaescolhida = "Porta1"
+                    start_time = pygame.time.get_ticks()
 
             if porta2_fechada:
                 if porta2_b.collidepoint(event.pos):
                     porta2_fechada = False
                     portaescolhida = "Porta2"
+                    start_time = pygame.time.get_ticks()
 
             if porta3_fechada:
                 if porta3_b.collidepoint(event.pos):
                     porta3_fechada = False
                     portaescolhida = "Porta3"
+                    start_time = pygame.time.get_ticks()
 
 
     #porta = porta()
     pygame.display.update()
+    clock.tick(60)
 
