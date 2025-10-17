@@ -1,5 +1,6 @@
 import sys
 import pygame
+import random
 from pygame.locals import *
 from tkinter import *
 from tkinter import messagebox
@@ -30,9 +31,7 @@ tela.fill(branco)
 porta1 = pygame.image.load("Porta1.png")
 porta2 = pygame.image.load("Porta2.png")
 porta3 = pygame.image.load("Porta3.png")
-porta1_aberta = pygame.image.load("imagens/Porta1_open.png")
-porta2_aberta = pygame.image.load("imagens/Porta2_open.png")
-porta3_aberta = pygame.image.load("imagens/Porta3_open.png")
+lista_portas = ['Porta1', 'Porta2', 'Porta3']
 
 #cats on the door
 dottie_door = pygame.image.load("imagens/dottiedoor.png")
@@ -129,7 +128,7 @@ while not menu_done:
 bartolomiau = pygame.image.load("imagens/bartolomiau.png")
 dottie = pygame.image.load("imagens/dottie.png")
 sunny = pygame.image.load("imagens/sunny.png")
-cats = ['bartolomiau', 'dottie', 'sunny']
+cats = {'bartolomiau':bart_door, 'dottie':dottie_door, 'sunny':sunny_door}
 
 while not cat_chosen:
     tela.fill(magenta_claro)
@@ -156,7 +155,7 @@ while not cat_chosen:
             #Escolha dos gatos
             if bart_choice.collidepoint(event.pos):
                 parte1 = True
-                cat = "bart"
+                cat = "bartolomiau"
                 cat_chosen = True
 
             if sunny_choice.collidepoint(event.pos):
@@ -179,8 +178,10 @@ while not cat_chosen:
 porta1_fechada = True
 porta2_fechada = True
 porta3_fechada = True
-ans = porta(cat)
-print(ans)
+ans,ran = porta(cat)
+print(ans,ran)
+chosen_cat = cats.pop(str(cat))
+print(cats, chosen_cat)
 
 # ------------- Jogo –-------------
 # Primeira escolha, entre as 3 portas
@@ -248,9 +249,12 @@ while parte1:
 #TELA DE RE-ESCOLHA DE PORTA ----------------------------------------------
 # parte 2 do jogo!
 
+
+
 while reescolha:
     tela.fill(rosa_claro)
     mouse = pygame.mouse.get_pos()
+    lista_fechadas = [porta1_fechada, porta2_fechada, porta3_fechada]
 
     inserir_texto("Tem certeza que vai escolher essa porta?", fonte2, branco, 365, 550)
     inserir_texto("Vou facilitar para você.", fonte2, branco, 485, 590)
@@ -259,29 +263,45 @@ while reescolha:
     if porta1_fechada:
         porta1_b = porta1.get_rect(topleft=(2 * x / 9, 300))
         tela.blit(porta1, porta1_b)
-        pygame.draw.rect(tela, branco, porta1_b, 1)
 
     if porta2_fechada:
         porta2_b = porta2.get_rect(topleft=(4 * x / 9, 300))
         tela.blit(porta2, porta2_b)
-        pygame.draw.rect(tela, preto, porta2_b, 1)
 
     if porta3_fechada:
         porta3_b = porta3.get_rect(topleft=(6 * x / 9, 300))
         tela.blit(porta3, porta3_b)
-        pygame.draw.rect(tela, magenta, porta3_b, 1)
+    print(ran)
+    if sum(lista_fechadas)>= 2:
+        if cat not in ans["Porta1"] and portaescolhida != "Porta1":
+            tela.blit(cats[list(cats)[0]], (2 * x / 9, 390))
+            porta1_fechada = False
+        elif cat not in ans["Porta2"] and portaescolhida != "Porta2":
+            tela.blit(cats[list(cats)[0]], (4 * x / 9, 390))
+            porta2_fechada = False
+        elif cat not in ans["Porta3"] and portaescolhida != "Porta3":
+            tela.blit(cats[list(cats)[0]], (6 * x / 9, 390))
+            porta3_fechada = False
 
-    if cat not in ans["Porta1"] and portaescolhida != "Porta1":
-        tela.blit(porta1_aberta, (2 * x / 9, 300))
-        porta1_fechada = False
-    elif cat not in ans["Porta2"] and portaescolhida != "Porta2":
-        tela.blit(porta2_aberta, (4 * x / 9, 300))
-        porta2_fechada = False
-    elif cat not in ans["Porta3"] and portaescolhida != "Porta3":
-        tela.blit(porta3_aberta, (6 * x / 9, 300))
-        porta3_fechada = False
+    else:
+        cont = 0
+        for i in (lista_portas):
+            cont = cont+1
+            if i:
+                if ran == portaescolhida:
+                    print('PARABENS')
+                    print(ran)
+                    print(i)
+                    if ran == i:
+                        print('PARABENS aaaaaa')
+                        tela.blit(chosen_cat, (2.5 * cont * x / 9, 390))
+                    else:
+                        tela.blit(cats[list(cats)[1]], (2.5 * cont * x / 9, 390))
 
-    #Tornando as portas clicaveis
+                else:
+                    print('Escolha errada ;(')
+
+    #Tornando as portas restantes clicaveis
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -289,13 +309,21 @@ while reescolha:
             pygame.quit()
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print("CLICK")
-            if porta1_b.collidepoint(event.pos):
-                porta1_fechada = False
-            elif porta2_b.collidepoint(event.pos):
-                porta2_fechada = False
-            elif porta3_b.collidepoint(event.pos):
-                porta3_fechada = False
+            if porta1_fechada:
+                if porta1_b.collidepoint(event.pos):
+                    porta1_fechada = False
+                    portaescolhida = "Porta1"
+
+            if porta2_fechada:
+                if porta2_b.collidepoint(event.pos):
+                    porta2_fechada = False
+                    portaescolhida = "Porta2"
+
+            if porta3_fechada:
+                if porta3_b.collidepoint(event.pos):
+                    porta3_fechada = False
+                    portaescolhida = "Porta3"
+
 
     #porta = porta()
     pygame.display.update()
