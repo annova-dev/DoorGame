@@ -8,9 +8,10 @@ def porta(gato):
 
     if random_number < 0.33:
         porta_premio["Porta1"] = gato
+        return porta_premio, "Porta1"
     elif random_number < 0.66:
         porta_premio["Porta2"] = gato
+        return porta_premio, "Porta2"
     else:
         porta_premio["Porta3"] = gato
-
-    return porta_premio
+        return porta_premio, "Porta3"
