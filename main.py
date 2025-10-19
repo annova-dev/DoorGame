@@ -65,7 +65,7 @@ def press(bo, tamanho):
 def popup():
     popup_rect = pygame.Rect(300, 100, 500, 200)
     pygame.draw.rect(tela, rosa_mais_claro, popup_rect)
-    pygame.draw.rect(tela, magenta, popup_rect, 5)
+    pygame.draw.rect(tela, branco, popup_rect, 3)
     text = fonte2.render("Jogar novamente?", True, branco)
     tela.blit(text, (popup_rect.x + 50, popup_rect.y + 80))
     #botoes
@@ -86,12 +86,9 @@ def popup():
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if b1.collidepoint(event.pos):
-                reescolha = False
-                menu_done = False
+                 return True
 
             if b2.collidepoint(event.pos):
-                jogo_quit = 0
-                reescolha = False
                 pygame.quit()
                 sys.exit()
 
@@ -106,57 +103,6 @@ jogo = esc_font.render("INICIAR", True, branco)
 regras = esc_font.render("REGRAS", True, branco)
 sair = esc_font.render("  SAIR", True, branco)
 
-def menu(menu_done):
-    tela.fill(magenta)
-    tela.blit(titulo, (x / 3 - 5, 100))
-    bb1 = pygame.Rect(b1)
-    botao(preto, b1)
-    bb2 = pygame.Rect(b2)
-    botao(preto, b2)
-    bb3 = pygame.Rect(b3)
-    botao(preto, b3)
-
-    press(bb1, b1)
-    press(bb2, b2)
-    press(bb3, b3)
-
-    tela.blit(jogo, (3 * x / 7 + 62, 360))
-    tela.blit(regras, (3 * x / 7 + 62, 450))
-    tela.blit(sair, (3 * x / 7 + 65, 540))
-
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if bb1.collidepoint(event.pos):
-                menu_done = True
-                print(menu_done)
-                return False
-
-
-            if bb2.collidepoint(event.pos):
-                Tk().wm_withdraw()
-                messagebox.showinfo('REGRAS',
-                                    'Tente adivinhar a porta! Você terá que adivinhar a porta que seu gato está. Escolha entre 3 portas, depois da primeira escolha, uma das portas em que seu gato NÃO está será removida. Depois você terá que escolher, se troca a porta ou se a mantém. Boa sorte!')
-
-            if bb3.collidepoint(event.pos):
-                pygame.quit()
-                sys.exit()
-
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-
-    pygame.display.update()
-
-
-#--------------- Menu ---------------
-menu_done = False
-
-while not menu_done:
-    cat_chosen = menu(menu_done)
-    print(cat_chosen)
-    if not cat_chosen:
-        menu_done = True
-
 # TELA DE ESCOLHA DO GATO - Primeira etapa
 
 # cats - para escolha
@@ -165,11 +111,10 @@ dottie = pygame.image.load("imagens/dottie.png")
 sunny = pygame.image.load("imagens/sunny.png")
 cats = {'bartolomiau':bart_door, 'dottie':dottie_door, 'sunny':sunny_door}
 
-while not cat_chosen:
+def escolha_gato():
     tela.fill(magenta_claro)
-    mouse = pygame.mouse.get_pos()
 
-    inserir_texto("Escolha um gato para adotar!", fonte, branco,225,150 )
+    inserir_texto("Escolha um gato para adotar!", fonte, branco, 225, 150)
 
     # Gato Barto
     bart_choice = bartolomiau.get_rect(topleft=(2 * x / 9, 300))
@@ -186,188 +131,252 @@ while not cat_chosen:
 
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-
-            #Escolha dos gatos
+            # Escolha dos gatos
             if bart_choice.collidepoint(event.pos):
                 parte1 = True
-                cat = "bartolomiau"
-                cat_chosen = True
+                gato_escolhido = "bartolomiau"
+                return parte1, gato_escolhido
 
             if sunny_choice.collidepoint(event.pos):
                 parte1 = True
-                cat = 'sunny'
-                cat_chosen = True
+                gato_escolhido = 'sunny'
+                return parte1, gato_escolhido
 
             if dottie_choice.collidepoint(event.pos):
                 parte1 = True
-                cat = 'dottie'
-                cat_chosen = True
+                gato_escolhido = 'dottie'
+                return parte1, gato_escolhido
 
         if event.type == QUIT:
-            done = True
-            pygame.quit()
-            sys.exit()
-    pygame.display.update()
-
-# Variaveis do jogo - NENHUMA PORTA FOI ESCOLHIDA AINDA // ALOCANDO O GATO ESCOLHIDO A UMA DAS PORTAS
-porta1_fechada = True
-porta2_fechada = True
-porta3_fechada = True
-
-ans,ran = porta(cat)
-print(ans,ran)
-
-chosen_cat = cats.pop(str(cat))
-print(cats, chosen_cat)
-
-# ------------- Jogo –-------------
-# Primeira escolha, entre as 3 portas
-while parte1:
-
-    tela.fill(amarelo_claro)
-    mouse = pygame.mouse.get_pos()
-
-    inserir_texto("Opa! Seu gato será seu se adivinhar em que porta ele está!", fonte2, magenta, 225, 150)
-
-    # Portas fechadas para escolha
-    if porta1_fechada:
-        porta1_b = porta1.get_rect(topleft=(2 * x / 9, 300))
-        tela.blit(porta1, porta1_b)
-        pygame.draw.rect(tela, branco, porta1_b, 1)
-
-    if porta2_fechada:
-        porta2_b = porta2.get_rect(topleft=(4 * x / 9, 300))
-        tela.blit(porta2, porta2_b)
-        pygame.draw.rect(tela, preto, porta2_b, 1)
-
-    if porta3_fechada:
-        porta3_b = porta3.get_rect(topleft=(6 * x / 9, 300))
-        tela.blit(porta3, porta3_b)
-        pygame.draw.rect(tela, magenta, porta3_b, 1)
-
-    #Tornando as portas clicaveis e passando a porta escolhida
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            jogo_quit = True
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print("CLICK")
-            if porta1_b.collidepoint(event.pos):
-                reescolha = True
-                portaescolhida = "Porta1"
-                parte1 = False
-
-            elif porta2_b.collidepoint(event.pos):
-                reescolha = True
-                portaescolhida = "Porta2"
-                parte1 = False
-
-            elif porta3_b.collidepoint(event.pos):
-                reescolha = True
-                portaescolhida = "Porta3"
-                parte1 = False
-
-    #porta = porta()
     pygame.display.update()
 
-#TELA DE RE-ESCOLHA DE PORTA ----------------------------------------------
-# parte 2 do jogo!
+
+#--------------- Menu ---------------
+jogo_done = False
+menu_on = True
+cat_chosen = True
+escolha = 0
+next = 0
+final = False
+begin = 0
+#--------------- Jogo ---------------
 popup_tempo = 2000
 popup_on = False
 start_time = 999999999
 
-while reescolha:
-    tela.fill(rosa_claro)
-    mouse = pygame.mouse.get_pos()
-    lista_fechadas = [porta1_fechada, porta2_fechada, porta3_fechada]
+# Variaveis do jogo - NENHUMA PORTA FOI ESCOLHIDA AINDA
+porta1_fechada = True
+porta2_fechada = True
+porta3_fechada = True
 
-    # Exibindo as portas não escolhidas como fechadas, e abrindo uma das que não foram escolhidas mas que não contem o gato certo
-    if porta1_fechada:
-        porta1_b = porta1.get_rect(topleft=(2 * x / 9, 300))
-        tela.blit(porta1, porta1_b)
+while not jogo_done:
+    if begin == 1:
+        jogo_done = False
+        menu_on = True
+        cat_chosen = True
+        escolha = 0
+        next = 0
+        final = False
+        popup_tempo = 2000
+        popup_on = False
+        start_time = 999999999
+        porta1_fechada = True
+        porta2_fechada = True
+        porta3_fechada = True
+        cats = {'bartolomiau': bart_door, 'dottie': dottie_door, 'sunny': sunny_door}
+        begin = 0
 
-    if porta2_fechada:
-        porta2_b = porta2.get_rect(topleft=(4 * x / 9, 300))
-        tela.blit(porta2, porta2_b)
+    if menu_on:
+        tela.fill(magenta)
+        tela.blit(titulo, (x / 3 - 5, 100))
+        bb1 = pygame.Rect(b1)
+        botao(preto, b1)
+        bb2 = pygame.Rect(b2)
+        botao(preto, b2)
+        bb3 = pygame.Rect(b3)
+        botao(preto, b3)
+        press(bb1, b1)
+        press(bb2, b2)
+        press(bb3, b3)
 
-    if porta3_fechada:
-        porta3_b = porta3.get_rect(topleft=(6 * x / 9, 300))
-        tela.blit(porta3, porta3_b)
+        tela.blit(jogo, (3 * x / 7 + 62, 360))
+        tela.blit(regras, (3 * x / 7 + 62, 450))
+        tela.blit(sair, (3 * x / 7 + 65, 540))
 
-    if sum(lista_fechadas) >= 2:
-        inserir_texto("Tem certeza que vai escolher essa porta?", fonte2, branco, 365, 550)
-        inserir_texto("Vou facilitar para você.", fonte2, branco, 485, 590)
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bb1.collidepoint(event.pos):
+                    cat_chosen = False
+                    menu_on = False
 
-        if cat not in ans["Porta1"] and portaescolhida != "Porta1":
-            tela.blit(cats[list(cats)[0]], (2 * x / 9, 390))
+                if bb2.collidepoint(event.pos):
+                    Tk().wm_withdraw()
+                    messagebox.showinfo('REGRAS',
+                                        'Tente adivinhar a porta! Você terá que adivinhar a porta que seu gato está. Escolha entre 3 portas, depois da primeira escolha, uma das portas em que seu gato NÃO está será removida. Depois você terá que escolher, se troca a porta ou se a mantém. Boa sorte!')
+
+                if bb3.collidepoint(event.pos):
+                    pygame.quit()
+                    sys.exit()
+
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+    # ETAPA DO JOGO - ESCOLHER O SEU GATO
+    elif cat_chosen == False:
+        resultado = escolha_gato()
+
+        if resultado is not None:
+            next, gato_escolhido = resultado
+            # ALEATORIZAÇÃO DA PORTA DO GATO
+            ordem_portas, porta_certa = porta(gato_escolhido)
+            # print(ordem_portas, porta_certa)
+            outros_gatos = cats.pop(str(gato_escolhido))
+            # print(cats, outros_gatos)
+            # Gato foi escolhido, ira para o proximo estagio
+            cat_chosen = True
+            escolha = 1
+
+    # ETAPA DO JOGO - ESCOLHER E RE-ESCOLHER A PORTA
+    elif next == 1:
+        lista_fechadas = [porta1_fechada, porta2_fechada, porta3_fechada]
+
+        # ------------- Jogo –-------------
+        # ESCOLHER - Primeira escolha, entre as 3 portas
+
+        if escolha == 1:
+            tela.fill(amarelo_claro)
+        else:
+            tela.fill(magenta)
+        mouse = pygame.mouse.get_pos()
+    
+        inserir_texto("Seu gato irá com você se adivinhar em que porta ele está!", fonte2, magenta, 225, 150)
+    
+        # Portas fechadas para escolha
+        if porta1_fechada:
+            porta1_b = porta1.get_rect(topleft=(2 * x / 9, 300))
+            tela.blit(porta1, porta1_b)
+            # pygame.draw.rect(tela, branco, porta1_b, 1)
+    
+        if porta2_fechada:
+            porta2_b = porta2.get_rect(topleft=(4 * x / 9, 300))
+            tela.blit(porta2, porta2_b)
+            # pygame.draw.rect(tela, preto, porta2_b, 1)
+    
+        if porta3_fechada:
+            porta3_b = porta3.get_rect(topleft=(6 * x / 9, 300))
+            tela.blit(porta3, porta3_b)
+            # pygame.draw.rect(tela, magenta, porta3_b, 1)
+
+        if escolha == 2:
+            inserir_texto("Tem certeza que vai escolher essa porta?", fonte2, branco, 365, 550)
+            inserir_texto("Vou te dar uma dica.", fonte2, branco, 485, 590)
+
+            if gato_escolhido not in ordem_portas["Porta1"] and portaescolhida != "Porta1":
+                tela.blit(cats[list(cats)[0]], (2 * x / 9, 390))
+                inserir_texto("Seu gato não está aqui...", fonte3, rosa_claro, 2 * x / 9, 390)
+                porta1_fechada = False
+            elif gato_escolhido not in ordem_portas["Porta2"] and portaescolhida != "Porta2":
+                tela.blit(cats[list(cats)[0]], (4 * x / 9, 390))
+                inserir_texto("Seu gato não está aqui...", fonte3, rosa_claro, 4 * x / 9, 390)
+                porta2_fechada = False
+            elif gato_escolhido not in ordem_portas["Porta3"] and portaescolhida != "Porta3":
+                tela.blit(cats[list(cats)[0]], (6 * x / 9, 390))
+                inserir_texto("Seu gato não está aqui...", fonte3, rosa_claro, 6 * x / 9, 390)
+                porta3_fechada = False
+
+
+        elif final:
+            cont = 0
+            cont_gatos = 0
             porta1_fechada = False
-        elif cat not in ans["Porta2"] and portaescolhida != "Porta2":
-            tela.blit(cats[list(cats)[0]], (4 * x / 9, 390))
             porta2_fechada = False
-        elif cat not in ans["Porta3"] and portaescolhida != "Porta3":
-            tela.blit(cats[list(cats)[0]], (6 * x / 9, 390))
             porta3_fechada = False
 
-    else:
-        cont = 0
-        cont_gatos = 0
-        porta1_fechada = False
-        porta2_fechada = False
-        porta3_fechada = False
+            for i in (lista_portas):
+                cont = cont + 1
+                if i:
+                    if porta_certa == portaescolhida:
+                        inserir_texto("PARABÉNS!", fonte2, branco, 555, 550)
+                        inserir_texto("Você escolheu o gato certo.", fonte2, branco, 455, 590)
+                        acertou = 1
 
-        for i in (lista_portas):
-            cont = cont+1
-            if i:
-                if ran == portaescolhida:
-                    inserir_texto("PARABÉNS!", fonte2, branco, 555, 550)
-                    inserir_texto("Você escolheu o gato certo.", fonte2, branco, 455, 590)
+                    else:
+                        inserir_texto("Opa! Errou o gato", fonte2, branco, 505, 550)
+                        inserir_texto("Agora seu gato vai viver uma vida nova sem você.", fonte2, branco, 295, 590)
+                        acertou = 0
 
-                else:
-                    inserir_texto("Opa! Errou o gato", fonte2, branco, 505, 550)
-                    inserir_texto("Agora seu gato vai viver uma vida nova sem você.", fonte2, branco, 295, 590)
+                    if porta_certa == i:
+                        tela.blit(outros_gatos, (2 * cont * x / 9, 390))
 
-                if ran == i:
-                    tela.blit(chosen_cat, (2 * cont * x / 9, 390))
-                else:
-                    tela.blit(cats[list(cats)[cont_gatos]], (2 * cont * x / 9, 390))
-                    cont_gatos = cont_gatos + 1
+                        if acertou == 1:
+                            inserir_texto("<<33", fonte2, branco, 2 * cont * x / 9, 390)
+                        else:
+                            inserir_texto("UAAAAA", fonte2, branco, 2 * cont * x / 9, 390)
+                    else:
+                        tela.blit(cats[list(cats)[cont_gatos]], (2 * cont * x / 9, 390))
+                        cont_gatos = cont_gatos + 1
 
-    current_time = pygame.time.get_ticks()
-    print(start_time)
-    if current_time - start_time >= popup_tempo:
-        popup_on = True
-    if popup_on:
-        popup()
-    #Tornando as portas restantes clicaveis
+        current_time = pygame.time.get_ticks()
+        if current_time - start_time >= popup_tempo:
+            popup_on = True
 
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            jogo_quit = True
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if porta1_fechada:
-                if porta1_b.collidepoint(event.pos):
-                    porta1_fechada = False
-                    portaescolhida = "Porta1"
-                    start_time = pygame.time.get_ticks()
+        if popup_on:
+            menu_on = popup()
+            if menu_on:
+                begin = 1
+                next = 0
+    
+        #Tornando as portas clicaveis e passando a porta escolhida
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                jogo_done = True
+                pygame.quit()
+                sys.exit()
+    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if porta1_fechada:
+                    if porta1_b.collidepoint(event.pos):
+                        if escolha == 1:
+                            portaescolhida = "Porta1"
+                            escolha = 2
+                        elif escolha == 2:
+                            porta1_fechada = False
+                            portaescolhida = "Porta1"
+                            escolha = 0
+                            final = True
+                            start_time = pygame.time.get_ticks()
+        
+                if porta2_fechada:
+                    if porta2_b.collidepoint(event.pos):
+                        if escolha == 1:
+                            portaescolhida = "Porta2"
+                            escolha = 2
+                        
+                        elif escolha == 2:
+                            porta2_fechada = False
+                            portaescolhida = "Porta2"
+                            escolha = 0
+                            final = True
+                            start_time = pygame.time.get_ticks()
 
-            if porta2_fechada:
-                if porta2_b.collidepoint(event.pos):
-                    porta2_fechada = False
-                    portaescolhida = "Porta2"
-                    start_time = pygame.time.get_ticks()
+                if porta3_fechada:
+                    if porta3_b.collidepoint(event.pos):
+                        if escolha == 1:
+                            portaescolhida = "Porta3"
+                            escolha = 2
 
-            if porta3_fechada:
-                if porta3_b.collidepoint(event.pos):
-                    porta3_fechada = False
-                    portaescolhida = "Porta3"
-                    start_time = pygame.time.get_ticks()
-
-
-    #porta = porta()
+                        elif escolha == 2:
+                            porta3_fechada = False
+                            portaescolhida = "Porta3"
+                            escolha = 0
+                            final = True
+                            start_time = pygame.time.get_ticks()
+    
+        #porta = porta()
     pygame.display.update()
     clock.tick(60)
 
